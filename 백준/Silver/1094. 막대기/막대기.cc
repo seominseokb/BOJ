@@ -1,18 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int X, result;
+int X, cnt;
 
 int main()
 {
     cin >> X;
-    
-    for(int i = 0; i < 7; i++){
-        if(X & (1 << i))
-            result++;
-    }
 
-    cout << result;
+    while(X >= 1){
+        if(X % 2 == 1)
+            cnt++;
+        X /= 2;
+    }
+    
+    cout << cnt;
 
     return 0;
 }
