@@ -2,59 +2,63 @@
 using namespace std;
 
 int N, M, result;
-string a[5];
-int visited[5][5];
-int dy[2] = {0, 1};
-int dx[2] = {1, 0};
-
-void dfs(int idx, int sum){
-    if(idx == N * M){
-        result = max(result, sum);
-        return;
-    }
-
-    int y = idx / M, x = idx % M;
-
-    if(visited[y][x]){
-        dfs(idx + 1, sum);
-        return;
-    }
-
-    for(int i = 0; i < 2; i++){
-        int K = (i == 0) ? M : N;
-        string num = "";
-        int cnt = 0;
-        for(int j = 0; j < K; j++){
-            int ny = y + dy[i] * j;
-            int nx = x + dx[i] * j;
-            if(ny < 0 || ny >= N || nx < 0 || nx >= M || visited[ny][nx]){
-                break;
-            }
-
-            visited[ny][nx] = 1;
-            num += a[ny][nx];
-            cnt++;
-            dfs(idx + 1, sum + stoi(num));
-        }
-        for(int j = 0; j < cnt; j++){
-            int ny = y + dy[i] * j;
-            int nx = x + dx[i] * j;
-            visited[ny][nx] = 0;
-        }
-    }
-}
+int a[5][5];
+string in;
 
 int main()
 {
     cin >> N >> M;
 
-    for(int i = 0 ; i < N; i++){
-        cin >> a[i];
+    for(int i = 0; i < N; i++){
+        cin >> in;
+        for(int j = 0; j < M; j++){
+            a[i][j] = in[j] - '0';
+        }
     }
 
-    dfs(0, 0);
+    for(int i = 0; i < (1 << (N * M)); i++){
+        int orient = 0;
+        for(int j = 0; j < N * M; j++){  // 0이면 가로, 1이면 세로
+            if(i & (1 << j))
+                orient |= 1 << j;
+        }
 
-    cout << result << '\n';
+        int sum = 0;
+
+        for(int y = 0; y < N; y++){
+            int s = 0;
+            for(int x = 0; x < M; x++){
+                int n = y * M + x;
+                if(!(orient & (1 << n))){  // 0인 경우
+                    s = s * 10 + a[y][x];
+                }
+                else{
+                    sum += s;
+                    s = 0;
+                }
+            }
+            sum += s;
+        }
+
+        for(int x = 0; x < M; x++){
+            int s = 0;
+            for(int y = 0; y < N; y++){
+                int n = y * M + x;
+                if(orient & (1 << n)){
+                    s = s * 10 + a[y][x];
+                }
+                else{
+                    sum += s;
+                    s = 0;
+                }
+            }
+            sum += s;
+        }
+
+        result = max(result, sum);
+    }
+
+    cout << result;
 
     return 0;
 }
